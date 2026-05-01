@@ -21,15 +21,16 @@ jobs:
 
       - name: Install Tailscale
         run: |
-          choco install tailscale -y
+          curl -L -o tailscale.msi https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi
+          start /wait msiexec /i tailscale.msi /quiet /norestart
 
       - name: Start Tailscale
         run: |
-          tailscale up --authkey=${{ secrets.TS_KEY }} --hostname=github-vps
+          "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TS_KEY }} --hostname=github-vps
 
       - name: Show IP
         run: |
-          tailscale ip -4
+          "C:\Program Files\Tailscale\tailscale.exe" ip -4
 
       - name: Keep Alive
         run: |
