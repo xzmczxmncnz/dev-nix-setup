@@ -7,10 +7,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Setup User (FIX ERROR)
+      - name: Setup User
+        shell: cmd
         run: |
           net user runneradmin 123456Aa@
-          net localgroup administrators runneradmin /add || echo "Already admin"
+          net localgroup administrators runneradmin /add
+          exit /b 0
 
       - name: Enable RDP
         run: |
@@ -24,13 +26,13 @@ jobs:
 
       - name: Add Auth Token
         run: |
-          ngrok config add-authtoken 3D7rcemV3FJ7Ec8haqyFBpWtKwn_6n5Q67cPbN5N5KFME2sSs
+          ngrok config add-authtoken ${{ secrets.NGROK_TOKEN }}
 
       - name: Start Tunnel
         run: |
           start ngrok tcp 3389
 
-      - name: Show Info
+      - name: Show IP
         run: |
           timeout /t 10
           curl http://127.0.0.1:4040/api/tunnels
