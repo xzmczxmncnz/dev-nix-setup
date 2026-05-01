@@ -1,4 +1,4 @@
-name: Windows VPS No Token
+name: Windows VPS Ngrok
 
 on: [workflow_dispatch]
 
@@ -7,23 +7,33 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Setup User
+      - name: Setup User (FIX ERROR)
         run: |
           net user runneradmin 123456Aa@
-          net localgroup administrators runneradmin /add
+          net localgroup administrators runneradmin /add || echo "Already admin"
 
       - name: Enable RDP
         run: |
           reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
-      - name: Download cloudflared
+      - name: Download ngrok
         run: |
-          curl -L -o cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
+          curl -L -o ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip
+          tar -xf ngrok.zip
 
-      - name: Start Tunnel (No Token)
+      - name: Add Auth Token
         run: |
-          start cloudflared.exe tunnel --url tcp://localhost:3389
+          ngrok config add-authtoken 3D7rcemV3FJ7Ec8haqyFBpWtKwn_6n5Q67cPbN5N5KFME2sSs
+
+      - name: Start Tunnel
+        run: |
+          start ngrok tcp 3389
+
+      - name: Show Info
+        run: |
+          timeout /t 10
+          curl http://127.0.0.1:4040/api/tunnels
 
       - name: Keep Alive
         run: |
