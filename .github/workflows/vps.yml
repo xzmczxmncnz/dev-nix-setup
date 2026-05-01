@@ -16,7 +16,7 @@ jobs:
 
       - name: Enable RDP
         run: |
-          reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
       - name: Download Tailscale
@@ -30,11 +30,16 @@ jobs:
 
       - name: Start Tailscale
         run: |
-          & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TS_KEY }} --hostname=github-vps
+          & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TS_KEY }} --hostname=github-vps --accept-routes
+
+      - name: Debug Tailscale
+        run: |
+          echo ===== STATUS =====
+          & "C:\Program Files\Tailscale\tailscale.exe" status
 
       - name: Show IP
         run: |
-          echo ===== YOUR VPS IP =====
+          echo ===== VPS IP =====
           & "C:\Program Files\Tailscale\tailscale.exe" ip -4
 
       - name: Keep Alive
