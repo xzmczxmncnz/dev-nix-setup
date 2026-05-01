@@ -1,0 +1,30 @@
+name: Windows VPS No Token
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Setup User
+        run: |
+          net user runneradmin 123456Aa@
+          net localgroup administrators runneradmin /add
+
+      - name: Enable RDP
+        run: |
+          reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+      - name: Download cloudflared
+        run: |
+          curl -L -o cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
+
+      - name: Start Tunnel (No Token)
+        run: |
+          start cloudflared.exe tunnel --url tcp://localhost:3389
+
+      - name: Keep Alive
+        run: |
+          ping -t 127.0.0.1
