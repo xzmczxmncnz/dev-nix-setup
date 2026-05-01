@@ -22,15 +22,15 @@ jobs:
       - name: Download ngrok
         run: |
           curl -L -o ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip
-          tar -xf ngrok.zip
+          powershell -command "Expand-Archive ngrok.zip -Force"
 
-      - name: Add Auth Token
+      - name: Add Token
         run: |
-          ngrok config add-authtoken ${{ secrets.NGROK_TOKEN }}
+          .\ngrok.exe config add-authtoken ${{ secrets.NGROK_TOKEN }}
 
       - name: Start Tunnel
         run: |
-          start ngrok tcp 3389
+          start .\ngrok.exe tcp 3389
 
       - name: Show IP
         run: |
