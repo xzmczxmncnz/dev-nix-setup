@@ -26,11 +26,11 @@ jobs:
 
       - name: Add Token
         run: |
-          ./ngrok.exe config add-authtoken ${{ secrets.NGROK_TOKEN }}
+          .\ngrok.exe config add-authtoken ${{ secrets.NGROK_TOKEN }}
 
       - name: Start Tunnel
         run: |
-          start ./ngrok.exe tcp 3389
+          Start-Process -NoNewWindow -FilePath ".\ngrok.exe" -ArgumentList "tcp 3389"
 
       - name: Show IP
         run: |
