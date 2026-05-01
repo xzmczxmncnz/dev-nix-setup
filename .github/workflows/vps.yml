@@ -30,12 +30,12 @@ jobs:
 
       - name: Start Tailscale
         run: |
-          "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TS_KEY }} --hostname=github-vps
+          & "C:\Program Files\Tailscale\tailscale.exe" up --authkey=${{ secrets.TS_KEY }} --hostname=github-vps
 
       - name: Show IP
         run: |
           echo ===== YOUR VPS IP =====
-          "C:\Program Files\Tailscale\tailscale.exe" ip -4
+          & "C:\Program Files\Tailscale\tailscale.exe" ip -4
 
       - name: Keep Alive
         run: |
