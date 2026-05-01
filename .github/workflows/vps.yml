@@ -1,4 +1,4 @@
-name: Windows VPS Ngrok
+name: Windows VPS Tailscale
 
 on: [workflow_dispatch]
 
@@ -19,23 +19,17 @@ jobs:
           reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
-      - name: Download ngrok
+      - name: Install Tailscale
         run: |
-          curl -L -o ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip
-          powershell -command "Expand-Archive ngrok.zip -DestinationPath . -Force"
+          choco install tailscale -y
 
-      - name: Add Token
+      - name: Start Tailscale
         run: |
-          .\ngrok.exe config add-authtoken ${{ secrets.NGROK_TOKEN }}
-
-      - name: Start Tunnel
-        run: |
-          Start-Process -NoNewWindow -FilePath ".\ngrok.exe" -ArgumentList "tcp 3389"
+          tailscale up --authkey=${{ secrets.TS_KEY }} --hostname=github-vps
 
       - name: Show IP
         run: |
-          timeout /t 10
-          curl http://127.0.0.1:4040/api/tunnels
+          tailscale ip -4
 
       - name: Keep Alive
         run: |
